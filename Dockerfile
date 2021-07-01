@@ -77,7 +77,7 @@ RUN apt-get update -qq && apt-get --no-install-recommends -yqq install \
     && rm -rf /data/boost_${BOOST_VERSION} \
     && rm -rf /data/boost_${BOOST_VERSION}.tar.bz2
 
-FROM index.docker.io/xmrto/monero:dependencies1 as dependencies2
+FROM index.docker.io/melotools/monero:dependencies1 as dependencies2
 WORKDIR /data
 
 ENV BASE_DIR /usr/local
@@ -162,7 +162,7 @@ RUN echo "\e[32mbuilding: Openssl\e[39m" \
     && cd /data || exit 1 \
     && rm -rf /data/libsodium
 
-FROM index.docker.io/xmrto/monero:dependencies2 as dependencies3
+FROM index.docker.io/melotools/monero:dependencies2 as dependencies3
 WORKDIR /data
 
 ENV BASE_DIR /usr/local
@@ -231,7 +231,7 @@ RUN echo "\e[32mbuilding: Udev\e[39m" \
     && cd /data || exit 1 \
     && rm -rf /data/protobuf
 
-FROM index.docker.io/xmrto/monero:dependencies3 as builder
+FROM index.docker.io/melotools/monero:dependencies3 as builder
 WORKDIR /data
 # BUILD_PATH:
 # Using 'USE_SINGLE_BUILDDIR=1 make' creates a unified build dir (/monero.git/build/release/bin)
