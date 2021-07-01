@@ -2,7 +2,7 @@ name: DockerHub Publish
 
 on:
   push:
-    branches: [ master, github-actions ]
+    branches: [ master ]
 
 env:
   IMAGE_NAME: melotools/monero
