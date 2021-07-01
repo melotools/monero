@@ -81,6 +81,7 @@ jobs:
           --cache-from $IMAGE_NAME:dependencies2
           --cache-from $IMAGE_NAME:dependencies3
           --cache-from $IMAGE_NAME:builder
+          --build-arg BRANCH=${{ steps.get_latest_monero_tag.outputs.latest_tag }}
           --build-arg BUILD_BRANCH=${{ steps.get_latest_monero_tag.outputs.latest_tag }}
           -f ./Dockerfile
           -t $IMAGE_NAME:builder .
@@ -98,6 +99,7 @@ jobs:
           --cache-from $IMAGE_NAME:dependencies3
           --cache-from $IMAGE_NAME:builder
           --cache-from $IMAGE_NAME
+          --build-arg BRANCH=${{ steps.get_latest_monero_tag.outputs.latest_tag }}
           --build-arg BUILD_BRANCH=${{ steps.get_latest_monero_tag.outputs.latest_tag }}
           -f ./Dockerfile
           -t $IMAGE_NAME:most_recent_tag .
