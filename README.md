@@ -1,12 +1,5 @@
-## Supported tags
-* `latest` (This is the most recent Monero `master` branch commit.)
-* `850edfe4199458314346e2910550b33663310f42` (This is a specific Monero `master` branch commit, specified by commit hash.)
-* `most_recent_tag` (This is the most recent Monero `tag`.)
-* `v0.17.1.5` (This is a specific Monero `tag`.)
-
----
-
-For running `monerod` or `monero-wallet-rpc` or `monero-wallet-cli` in a docker container.
+This repo builds a Docker image for Monero, which allows
+running `monerod` or `monero-wallet-rpc` or `monero-wallet-cli` inside a container.
 
 This daemon is built from source: [monero project](https://github.com/monero-project/monero).
 
@@ -18,6 +11,15 @@ This daemon is built from source: [monero project](https://github.com/monero-pro
 * Monero tools can also be used through the Tor network, see **Tor software** below.
 
 `readline` is finally compiled into the binaries, so using `monero-wallet-cli` is way more convenient.
+
+Internal Melotools infrastructure tracks new Monero releases and triggers CI jobs
+on this repo, to publish the images to [DockerHub](https://hub.docker.com/repository/docker/melotools/monero/general)
+
+## Supported tags
+* `latest` (This is the most recent Monero `master` branch commit.)
+* A specific commit, like `850edfe4199458314346e2910550b33663310f42` (This is a specific Monero `master` branch commit, specified by commit hash.)
+* `most_recent_tag` (This is the most recent Monero `tag`.)
+* A specific tag, like `v0.17.1.5` (This is a specific Monero `tag`.)
 
 ## system and binary information
 
