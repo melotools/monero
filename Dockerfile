@@ -77,7 +77,7 @@ RUN apt-get update -qq && apt-get --no-install-recommends -yqq install \
     && rm -rf /data/boost_${BOOST_VERSION} \
     && rm -rf /data/boost_${BOOST_VERSION}.tar.bz2
 
-FROM index.docker.io/xmrto/monero:dependencies1 as dependencies2
+FROM index.docker.io/rinocommunity/monero:dependencies1 as dependencies2
 WORKDIR /data
 
 ENV BASE_DIR /usr/local
@@ -98,6 +98,13 @@ ARG READLINE_HASH=e339f51971478d369f8a053a330a190781acb9864cf4c541060f12078948e4
 # Sodium
 ARG SODIUM_VERSION=1.0.18
 ARG SODIUM_HASH=4f5e89fa84ce1d178a6765b8b46f2b6f91216677
+# unbound
+ARG UNBOUND_VERSION=1.15.0
+ARG UNBOUND_HASH=a480dc6c8937447b98d161fe911ffc76cfaffa2da18788781314e81339f1126f
+# LibExpat (required by Unbound)
+ARG LIBEXPAT_VERSION=2.4.1
+ARG LIBEXPAT_VERSION_UNDERSCORE=2_4_1
+ARG LIBEXPAT_HASH=2f9b6a580b94577b150a7d5617ad4643a4301a6616ff459307df3e225bcfbf40
 
 ENV CFLAGS='-fPIC -O2 -g'
 ENV CXXFLAGS='-fPIC -O2 -g'
@@ -160,9 +167,35 @@ RUN echo "\e[32mbuilding: Openssl\e[39m" \
     && make check > /dev/null \
     && make install > /dev/null \
     && cd /data || exit 1 \
-    && rm -rf /data/libsodium
+    && rm -rf /data/libsodium \
+    && echo "\e[32mbuilding: LibExpat\e[39m" \
+    && set -ex \
+    && curl -SOL https://github.com/libexpat/libexpat/releases/download/R_${LIBEXPAT_VERSION_UNDERSCORE}/expat-${LIBEXPAT_VERSION}.tar.bz2 > /dev/null \
+	    && echo "${LIBEXPAT_HASH}  expat-${LIBEXPAT_VERSION}.tar.bz2" | sha256sum -c \
+	    && tar -xf expat-${LIBEXPAT_VERSION}.tar.bz2 > /dev/null \
+        && cd expat-${LIBEXPAT_VERSION} || exit 1 \
+	    && ./configure --enable-static --disable-shared --prefix=$BASE_DIR > /dev/null \
+	    && make -j4 > /dev/null \
+	    && make install -j4 > /dev/null \
+        && cd /data || exit 1 \
+    && rm -rf /data/expat-${LIBEXPAT_VERSION} \
+    && rm -rf /data/expat-${LIBEXPAT_VERSION}.tar.bz2 \
+    && echo "\e[32mbuilding: Unbound\e[39m" \
+    && set -ex \
+    && curl -SOL https://www.nlnetlabs.nl/downloads/unbound/unbound-${UNBOUND_VERSION}.tar.gz \
+    && sha256sum unbound-${UNBOUND_VERSION}.tar.gz \
+	    && echo "${UNBOUND_HASH}  unbound-${UNBOUND_VERSION}.tar.gz" | sha256sum -c \
+	    && tar -xf unbound-${UNBOUND_VERSION}.tar.gz > /dev/null \
+        && cd unbound-${UNBOUND_VERSION} || exit 1 \
+        && ./configure --disable-shared --enable-static --without-pyunbound --prefix=$BASE_DIR --with-libevent=no --without-pythonmodule --disable-flto --with-pthreads --with-libunbound-only --with-pic > /dev/null \
+	    && make -j4 > /dev/null \
+	    && make install -j4 > /dev/null \
+        && cd /data || exit 1 \
+        && rm -rf /data/unbound-${UNBOUND_VERSION} \
+        && rm -rf /data/unbound-${UNBOUND_VERSION}.tar.gz
 
-FROM index.docker.io/xmrto/monero:dependencies2 as dependencies3
+
+FROM index.docker.io/rinocommunity/monero:dependencies2 as dependencies3
 WORKDIR /data
 
 ENV BASE_DIR /usr/local
@@ -231,7 +264,7 @@ RUN echo "\e[32mbuilding: Udev\e[39m" \
     && cd /data || exit 1 \
     && rm -rf /data/protobuf
 
-FROM index.docker.io/xmrto/monero:dependencies3 as builder
+FROM index.docker.io/rinocommunity/monero:dependencies3 as builder
 WORKDIR /data
 # BUILD_PATH:
 # Using 'USE_SINGLE_BUILDDIR=1 make' creates a unified build dir (/monero.git/build/release/bin)
