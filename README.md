@@ -1,23 +1,25 @@
-## Supported tags
-* `latest` (This is the most recent Monero `master` branch commit.)
-* `850edfe4199458314346e2910550b33663310f42` (This is a specific Monero `master` branch commit, specified by commit hash.)
-* `most_recent_tag` (This is the most recent Monero `tag`.)
-* `v0.17.1.5` (This is a specific Monero `tag`.)
-
----
-
-For running `monerod` or `monero-wallet-rpc` or `monero-wallet-cli` in a docker container.
+This repo builds a Docker image for Monero, which allows
+running `monerod` or `monero-wallet-rpc` or `monero-wallet-cli` inside a container.
 
 This daemon is built from source: [monero project](https://github.com/monero-project/monero).
 
-* Monero stable for `stagenet`/`mainnet`: Use version tags like `v0.17.1.5`.
-* `testnet`: Use the `master` tag.
+* Monero stable for `stagenet`/`mainnet`: Use version tags like `v0.17.3.2` (or `most_recent_tag`).
+* `testnet`: Use the `latest` tag (or specific master branch commit hash, eg `850edfe4199458314346e2910550b33663310f42`).
   - Generally, it is recommended to use `master` branch when working on `testnet`.
-  - Of course, `latest` can also be used with `mainnet` and `stagenet`.
+  - Of course, `latest` (from Master branch) can also be used with `mainnet` and `stagenet`, but typically this is not recommended.
 * The `latest` docker image is based on `master` branch.
 * Monero tools can also be used through the Tor network, see **Tor software** below.
 
 `readline` is finally compiled into the binaries, so using `monero-wallet-cli` is way more convenient.
+
+Internal RINO Community infrastructure tracks new Monero releases and triggers CI jobs
+on this repo, to publish the images to [DockerHub](https://hub.docker.com/repository/docker/rinocommunity/monero/general)
+
+## Supported tags
+* `:latest` (This is the most recent Monero `master` branch commit. Good for `testnet`.)
+* A specific commit, like `:850edfe4199458314346e2910550b33663310f42` (This is a specific Monero `master` branch commit, specified by commit hash. Good for `testnet`.)
+* `:most_recent_tag` (This is the most recent Monero `tag`. Good for `stagenet`/`mainnet`.)
+* A specific tag, like `:v0.17.3.2` (This is a specific Monero `tag`. Good for `stagenet`/`mainnet`.)
 
 ## system and binary information
 
@@ -114,14 +116,14 @@ It is also possible to deactivate the entrpoint script.
 
 This way, it is possible to define and configure e.g. the `monero-wallet-rpc` yourself:
 ```
-docker run --rm -d --net host -v <path/to/and/including/wallet_folder>:/monero --entrypoint="" xmrto/monero monero-wallet-rpc --log-level 2 --daemon-host node.xmr.to --daemon-port 18081 --confirm-external-bind --rpc-login user:passwd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18083 --wallet-file wallet --password-file wallet.passwd
+docker run --rm -d --net host -v <path/to/and/including/wallet_folder>:/monero --entrypoint="" rinocommunity/monero:most_recent_tag monero-wallet-rpc --log-level 2 --daemon-host node.community.rino.io --daemon-port 18081 --confirm-external-bind --rpc-login user:passwd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18083 --wallet-file wallet --password-file wallet.passwd
 ```
 
 ## monerod
 
 Without any additional command
 
-`docker run --rm -it xmrto/monero`
+`docker run --rm -it rinocommunity/monero:most_recent_tag`
 
 `monerod` starts with the above default configuration plus the following option:
 * `--check-updates disabled`
@@ -129,13 +131,13 @@ Without any additional command
 Any additional `monerod` parameters can be passed as command:
 
 ```
-docker run --rm -d -p 18081:18081 -v <path/to/and/including/.bitmonero>:/monero xmrto/monero --data-dir /monero
+docker run --rm -d -p 18081:18081 -v <path/to/and/including/.bitmonero>:/monero rinocommunity/monero:most_recent_tag --data-dir /monero
 ```
 
 Not specifying a host port in `-p <host_port>:<container_port>` docker will automatically assign a free port on the host.
 
 ```
-docker run --rm -d -p 18081 -v <path/to/and/including/.bitmonero>:/monero xmrto/monero --data-dir /monero
+docker run --rm -d -p 18081 -v <path/to/and/including/.bitmonero>:/monero rinocommunity/monero:most_recent_tag --data-dir /monero
 ```
 
 However, this only works for the common Monero network ports:
@@ -152,7 +154,7 @@ Run `monerod` as different user (`uid != 1000 && uid != 0`). This is useful if d
 Abbreviated command:
 
 ```
-docker run --rm -d -p 18081:18081 -e USER_ID=500 -v <host>:<container> xmrto/monero <options>
+docker run --rm -d -p 18081:18081 -e USER_ID=500 -v <host>:<container> rinocommunity/monero:most_recent_tag <options>
 ```
 
 ### hint
@@ -164,12 +166,12 @@ When used as `monero-wallet-rpc` the full command is necessary as command to doc
 
 Passing the pasword as environment variable:
 ```
-docker run --rm -d --net host -e DAEMON_HOST=node.xmr.to -e DAEMON_PORT=18081 -e RPC_BIND_PORT=18083 -e RPC_USER=user -e RPC_PASSWD=passwd -e WALLET_PASSWD=securePasswd -v <path/to/and/including/wallet_folder>:/monero xmrto/monero monero-wallet-rpc  --wallet-file wallet
+docker run --rm -d --net host -e DAEMON_HOST=node.community.rino.io -e DAEMON_PORT=18081 -e RPC_BIND_PORT=18083 -e RPC_USER=user -e RPC_PASSWD=passwd -e WALLET_PASSWD=securePasswd -v <path/to/and/including/wallet_folder>:/monero rinocommunity/monero:most_recent_tag monero-wallet-rpc  --wallet-file wallet
 ```
 
 Using a password file:
 ```
-docker run --rm -d --net host -e DAEMON_HOST=node.xmr.to -e DAEMON_PORT=18081 -e RPC_BIND_PORT=18083 -e RPC_USER=user -e RPC_PASSWD=passwd -v <path/to/and/including/wallet_folder>:/monero xmrto/monero monero-wallet-rpc  --wallet-file wallet --password-file wallet.passwd
+docker run --rm -d --net host -e DAEMON_HOST=node.community.rino.io -e DAEMON_PORT=18081 -e RPC_BIND_PORT=18083 -e RPC_USER=user -e RPC_PASSWD=passwd -v <path/to/and/including/wallet_folder>:/monero rinocommunity/monero:most_recent_tag monero-wallet-rpc  --wallet-file wallet --password-file wallet.passwd
 ```
 
 ### user
@@ -178,7 +180,7 @@ Run `monero-wallet-rpc` as different user (`uid != 1000 && uid != 0`). This is u
 Abbreviated command:
 
 ```
-docker run --rm -d --net host -e DAEMON_HOST=node.xmr.to -e DAEMON_PORT=18081 -e RPC_BIND_PORT=18083 -e USER_ID=500 -v <host>:<container> xmrto/monero monero-wallet-rpc <options>
+docker run --rm -d --net host -e DAEMON_HOST=node.community.rino.io -e DAEMON_PORT=18081 -e RPC_BIND_PORT=18083 -e USER_ID=500 -v <host>:<container> rinocommunity/monero:most_recent_tag monero-wallet-rpc <options>
 ```
 
 ### rpc
@@ -194,7 +196,7 @@ The path `/monero` is supposed to contain the actual wallet files. So when mount
 When used as `monero-wallet-cli` the full command is necessary as command to docker run:
 
 ```
-docker run --rm -it -e DAEMON_HOST=node.xmr.to -e DAEMON_PORT=18081 -v <path/to/and/including/wallet_folder>:/monero --net host xmrto/monero monero-wallet-cli --wallet-file wallet --password-file wallet.passwd
+docker run --rm -it -e DAEMON_HOST=node.community.rino.io -e DAEMON_PORT=18081 -v <path/to/and/including/wallet_folder>:/monero --net host rinocommunity/monero:most_recent_tag monero-wallet-cli --wallet-file wallet --password-file wallet.passwd
 ```
 
 Due to `-it` (interactive terminal), you will end up within the container and can use the `monero-wallet-cli` commands.
@@ -205,7 +207,7 @@ Run `monero-wallet-cli` as different user (`uid != 1000 && uid != 0`). This is u
 Abbreviated command:
 
 ```
-docker run --rm -it --net host -e DAEMON_HOST=node.xmr.to -e DAEMON_PORT=18081 -e USER_ID=500 -v <host>:<container> xmrto/monero monero-wallet-cli <options>
+docker run --rm -it --net host -e DAEMON_HOST=node.community.rino.io -e DAEMON_PORT=18081 -e USER_ID=500 -v <host>:<container> rinocommunity/monero:most_recent_tag monero-wallet-cli <options>
 ```
 
 ### hint
@@ -240,7 +242,7 @@ AllowInbound 1
 
 The option `AllowInbound` is set to `1`, in order to allow binding the monero daemon to all interfaces (`0.0.0.0`) - within docker containers.
 
-Please also refer to [xmrto/tor](https://hub.docker.com/r/xmrto/tor) for further details.
+Please also refer to [rinocommunity/tor](https://hub.docker.com/r/rinocommunity/tor) for further details.
 
 ### using the Tor proxy
 There are two options:
@@ -282,14 +284,14 @@ After starting the docker container you will find your hostname (**.onion addres
 
 `docker exec <container_name> cat /var/lib/tor/daemons/hostname`
 
-Please also refer to [xmrto/tor](https://hub.docker.com/r/xmrto/tor) for further details.
+Please also refer to [rinocommunity/tor](https://hub.docker.com/r/rinocommunity/tor) for further details.
 
 #### separate images
 The monero tools and the Tor proxy can also be run in separate containers (from separate images or processes on the host).
 
 In this case, you need to make the host's localhost available within the monero docker container - see above **using torsocks**.
 
-Please also refer to [xmrto/tor](https://hub.docker.com/r/xmrto/tor) for further details.
+Please also refer to [rinocommunity/tor](https://hub.docker.com/r/rinocommunity/tor) for further details.
 
 ### docker container configuration examples
 
@@ -307,4 +309,4 @@ Please also refer to [xmrto/tor](https://hub.docker.com/r/xmrto/tor) for further
     + `USE_TORSOCKS=YES`
   - Check tor configuration
 
-Please also refer to [xmrto/tor](https://hub.docker.com/r/xmrto/tor) for further details.
+Please also refer to [rinocommunity/tor](https://hub.docker.com/r/rinocommunity/tor) for further details.
