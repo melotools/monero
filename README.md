@@ -3,11 +3,11 @@ running `monerod` or `monero-wallet-rpc` or `monero-wallet-cli` inside a contain
 
 This daemon is built from source: [monero project](https://github.com/monero-project/monero).
 
-* Monero stable for `stagenet`/`mainnet`: Use version tags like `v0.17.3.2`.
-* `testnet`: Use the `master` tag.
+* Monero stable for `stagenet`/`mainnet`: Use version tags like `:v0.17.3.2` (or :most_recent_tag).
+* `testnet`: Use the `:latest` tag (or specific master branch commit hash, eg :850edfe4199458314346e2910550b33663310f42).
   - Generally, it is recommended to use `master` branch when working on `testnet`.
-  - Of course, `latest` can also be used with `mainnet` and `stagenet`.
-* The `latest` docker image is based on `master` branch.
+  - Of course, `:latest` (from Master branch) can also be used with `mainnet` and `stagenet`, but typically this is not recommended.
+* The `:latest` docker image is based on `master` branch.
 * Monero tools can also be used through the Tor network, see **Tor software** below.
 
 `readline` is finally compiled into the binaries, so using `monero-wallet-cli` is way more convenient.
@@ -16,10 +16,10 @@ Internal RINO Community infrastructure tracks new Monero releases and triggers C
 on this repo, to publish the images to [DockerHub](https://hub.docker.com/repository/docker/rinocommunity/monero/general)
 
 ## Supported tags
-* `latest` (This is the most recent Monero `master` branch commit.)
-* A specific commit, like `850edfe4199458314346e2910550b33663310f42` (This is a specific Monero `master` branch commit, specified by commit hash.)
-* `most_recent_tag` (This is the most recent Monero `tag`.)
-* A specific tag, like `v0.17.3.2` (This is a specific Monero `tag`.)
+* `:latest` (This is the most recent Monero `master` branch commit. Good for Testnet.)
+* A specific commit, like `:850edfe4199458314346e2910550b33663310f42` (This is a specific Monero `master` branch commit, specified by commit hash. Good for Testnet.)
+* `:most_recent_tag` (This is the most recent Monero `tag`.Good for Stagenet and Mainnet.)
+* A specific tag, like `:v0.17.3.2` (This is a specific Monero `tag`.Good for Stagenet and Mainnet.)
 
 ## system and binary information
 
@@ -123,7 +123,7 @@ docker run --rm -d --net host -v <path/to/and/including/wallet_folder>:/monero -
 
 Without any additional command
 
-`docker run --rm -it melotools/monero`
+`docker run --rm -it rinocommunity/monero:most_recent_tag`
 
 `monerod` starts with the above default configuration plus the following option:
 * `--check-updates disabled`
@@ -131,13 +131,13 @@ Without any additional command
 Any additional `monerod` parameters can be passed as command:
 
 ```
-docker run --rm -d -p 18081:18081 -v <path/to/and/including/.bitmonero>:/monero melotools/monero --data-dir /monero
+docker run --rm -d -p 18081:18081 -v <path/to/and/including/.bitmonero>:/monero rinocommunity/monero:most_recent_tag --data-dir /monero
 ```
 
 Not specifying a host port in `-p <host_port>:<container_port>` docker will automatically assign a free port on the host.
 
 ```
-docker run --rm -d -p 18081 -v <path/to/and/including/.bitmonero>:/monero melotools/monero --data-dir /monero
+docker run --rm -d -p 18081 -v <path/to/and/including/.bitmonero>:/monero rinocommunity/monero:most_recent_tag --data-dir /monero
 ```
 
 However, this only works for the common Monero network ports:
