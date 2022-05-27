@@ -172,28 +172,28 @@ RUN echo "\e[32mbuilding: Openssl\e[39m" \
     && echo "\e[32mbuilding: LibExpat\e[39m" \
     && set -ex \
     && curl -SOL https://github.com/libexpat/libexpat/releases/download/R_${LIBEXPAT_VERSION_UNDERSCORE}/expat-${LIBEXPAT_VERSION}.tar.bz2 > /dev/null \
-	    && echo "${LIBEXPAT_HASH}  expat-${LIBEXPAT_VERSION}.tar.bz2" | sha256sum -c \
-	    && tar -xf expat-${LIBEXPAT_VERSION}.tar.bz2 > /dev/null \
-        && cd expat-${LIBEXPAT_VERSION} || exit 1 \
-	    && ./configure --enable-static --disable-shared --prefix=$BASE_DIR > /dev/null \
-	    && make -j4 > /dev/null \
-	    && make install -j4 > /dev/null \
-        && cd /data || exit 1 \
+    && echo "${LIBEXPAT_HASH}  expat-${LIBEXPAT_VERSION}.tar.bz2" | sha256sum -c \
+    && tar -xf expat-${LIBEXPAT_VERSION}.tar.bz2 > /dev/null \
+    && cd expat-${LIBEXPAT_VERSION} || exit 1 \
+    && ./configure --enable-static --disable-shared --prefix=$BASE_DIR > /dev/null \
+    && make -j4 > /dev/null \
+    && make install -j4 > /dev/null \
+    && cd /data || exit 1 \
     && rm -rf /data/expat-${LIBEXPAT_VERSION} \
     && rm -rf /data/expat-${LIBEXPAT_VERSION}.tar.bz2 \
     && echo "\e[32mbuilding: Unbound\e[39m" \
     && set -ex \
     && curl -SOL https://www.nlnetlabs.nl/downloads/unbound/unbound-${UNBOUND_VERSION}.tar.gz \
     && sha256sum unbound-${UNBOUND_VERSION}.tar.gz \
-	    && echo "${UNBOUND_HASH}  unbound-${UNBOUND_VERSION}.tar.gz" | sha256sum -c \
-	    && tar -xf unbound-${UNBOUND_VERSION}.tar.gz > /dev/null \
-        && cd unbound-${UNBOUND_VERSION} || exit 1 \
-        && ./configure --disable-shared --enable-static --without-pyunbound --prefix=$BASE_DIR --with-libevent=no --without-pythonmodule --disable-flto --with-pthreads --with-libunbound-only --with-pic > /dev/null \
-	    && make -j4 > /dev/null \
-	    && make install -j4 > /dev/null \
-        && cd /data || exit 1 \
-        && rm -rf /data/unbound-${UNBOUND_VERSION} \
-        && rm -rf /data/unbound-${UNBOUND_VERSION}.tar.gz
+    && echo "${UNBOUND_HASH}  unbound-${UNBOUND_VERSION}.tar.gz" | sha256sum -c \
+    && tar -xf unbound-${UNBOUND_VERSION}.tar.gz > /dev/null \
+    && cd unbound-${UNBOUND_VERSION} || exit 1 \
+    && ./configure --disable-shared --enable-static --without-pyunbound --prefix=$BASE_DIR --with-libevent=no --without-pythonmodule --disable-flto --with-pthreads --with-libunbound-only --with-pic > /dev/null \
+    && make -j4 > /dev/null \
+    && make install -j4 > /dev/null \
+    && cd /data || exit 1 \
+    && rm -rf /data/unbound-${UNBOUND_VERSION} \
+    && rm -rf /data/unbound-${UNBOUND_VERSION}.tar.gz
 
 
 FROM index.docker.io/rinocommunity/monero:dependencies2 as dependencies3
